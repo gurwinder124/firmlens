@@ -2,7 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\CompanyController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,6 +15,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('register-company',[CompanyController::class,'registerCompany']);
+Route::post('/login',[LoginController::class, 'userLogin'])->name('userLogin');
+Route::post('register',[LoginController::class, 'registerUser'])->name('registerUser');
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+Route::group( ['middleware' => ['auth:user-api','scopes:user'] ],function(){
+    // authenticated staff routes here 
+    //Route::get('dashboard',[LoginController::class, 'clientDashboard']);
+});
+
+Route::post('admin/login',[LoginController::class, 'adminLogin'])->name('adminLogin');
+
+Route::group( ['prefix' => 'admin','middleware' => ['auth:admin-api','scopes:admin'] ],function(){
+   // authenticated staff routes here 
+    //Route::get('dashboard',[LoginController::class, 'userDashboard']);
 });

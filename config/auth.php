@@ -50,12 +50,12 @@ return [
             'provider' => 'users',
         ],
 
-        'client' => [
+        'admin' => [
             'driver' => 'session',
             'provider' => 'admins',
         ],
 
-        'client-api' => [
+        'admin-api' => [
             'driver' => 'token',
             'provider' => 'admins',
         ],

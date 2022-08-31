@@ -6,16 +6,16 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
 class Handler extends ExceptionHandler
-{
+{  
+    //
     /**
      * A list of exception types with their corresponding custom log levels.
-     *
+     
      * @var array<class-string<\Throwable>, \Psr\Log\LogLevel::*>
      */
     protected $levels = [
-        //
+       
     ];
-
     /**
      * A list of the exception types that are not reported.
      *
@@ -44,7 +44,7 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+            //dd('Exception');
         });
     }
 }

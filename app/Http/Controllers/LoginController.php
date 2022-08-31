@@ -11,6 +11,7 @@ use Auth;
 
 class LoginController extends Controller
 {
+    
     public function userDashboard()
     {
         $users = User::all();
@@ -67,7 +68,7 @@ class LoginController extends Controller
 
             config(['auth.guards.api.provider' => 'admin']);
             
-            $admin = admin::select('admins.*')->find(auth()->guard('admin')->user()->id);
+            $admin = Admin::select('Admins.*')->find(auth()->guard('admin')->user()->id);
             $success =  $admin;
             $success['token'] =  $admin->createToken('MyApp',['admin'])->accessToken; 
 
@@ -76,4 +77,31 @@ class LoginController extends Controller
             return response()->json(['error' => ['Email and Password are Wrong.']], 200);
         }
     }
+
+    // public function registerUser(){
+    //     try{
+    //         $validator = Validator::make($request->all(), [
+    //             'designation' => 'required',
+    //         ]);
+    //         if ($validator->fails()) {
+    //             return response()->json(['code' => '302', 'error' => $validator->errors()]);
+    //         }
+    //         $data = new User;
+    //         $data->name  = $request->name ;
+    //         $data->email = $request->email;
+    //         $data->password  = Hash::make($request->company_name);
+    //         $data->full_name  = $request->full_name ;
+    //         $data->official_email = $request->official_email;
+    //         $data->designation = $request->designation;
+    //         $data->save();
+    //         return response()->json(['status' => 'Success', 'code' => 200, 'data' => $data]);
+
+
+    //     }
+    //     catch(Exception $e){
+    //         return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
+
+    //     }
+    // }
 }
+
