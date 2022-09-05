@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+use App\Models\Admin;
 
-class LoginController extends Controller
+class AdminLoginController extends Controller
 {
     /**
      * User login API method
@@ -31,7 +31,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $user             = Auth::user();
             $success['name']  = $user->name;
-            $success['token'] = $user->createToken('accessToken')->accessToken;
+            $success['token'] = $user->createToken('accessToken',['admin'])->accessToken;
 
             return sendResponse($success, 'You are successfully logged in.');
         } else {
@@ -56,7 +56,7 @@ class LoginController extends Controller
         if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 422);
 
         try {
-            $user = User::create([
+            $user = Admin::create([
                 'name'     => $request->name,
                 'email'    => $request->email,
                 'password' => bcrypt($request->password)
@@ -64,7 +64,7 @@ class LoginController extends Controller
 
             $success['name']  = $user->name;
             $message          = 'Yay! A user has been successfully created.';
-            $success['token'] = $user->createToken('accessToken')->accessToken;
+            $success['token'] = $user->createToken('accessToken', ['admin'])->accessToken;
             
         } catch (Exception $e) {
             $success['token'] = [];
