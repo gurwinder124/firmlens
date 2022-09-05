@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Admin\AdminLoginController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\CompanyController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -27,13 +29,17 @@ Route::prefix('v1')->group(function () {
 
     
 });
-Route::get('login', [AdminLoginController::class, 'login']);
+    Route::get('login', [AdminLoginController::class, 'login'])->name('login');
+    Route::post('registerCompany', [CompanyController::class, 'registerCompany']);
 
-Route::prefix('admin')->group(function () {
+    Route::prefix('admin')->group(function () {
     Route::post('login', [AdminLoginController::class, 'login']);
     Route::post('register', [AdminLoginController::class, 'register']);
+    Route::middleware(['auth:admin-api'])->group(function () {
+        Route::get('pending-list', [AdminController::class,'companyPendingList']);
+        Route::post('update-company-status', [AdminController::class,'updateCompanyStatus']);
+        Route::get('comapny-approved-list', [AdminController::class,'comapnyApprovedList']);
 
-    Route::middleware('auth:admin-api')->group(function () {
-        Route::get('users-list', [AdminController::class,'index']);
+
     });
 });

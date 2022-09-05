@@ -18,7 +18,8 @@ class LoginController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request)
-    {
+    {  
+        try{
         $validator = Validator::make($request->all(), [
             'email'    => 'required|email',
             'password' => 'required'
@@ -26,7 +27,7 @@ class LoginController extends Controller
 
         if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 422);
 
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('email','password');
 
         if (Auth::attempt($credentials)) {
             $user             = Auth::user();
@@ -38,6 +39,11 @@ class LoginController extends Controller
             return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
         }
     }
+ catch(\Exception $e){
+        return response()->json(['status'=>'error','code'=>'401', 'msg'=>'You  are not authorised']);
+      }
+    }
+    
 
     /**
      * User registration API method

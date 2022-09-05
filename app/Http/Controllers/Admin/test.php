@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Exception;
-use App\Models\Admin;
-use Auth;
 
 class AdminLoginController extends Controller
 {
@@ -19,34 +18,26 @@ class AdminLoginController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request)
-    { //dd($request);
-        try{
-            $validator = Validator::make($request->all(), [
-                'email'    => 'required|email',
-                'password' => 'required'
-            ]);
+    {
+        $validator = Validator::make($request->all(), [
+            'email'    => 'required|email',
+            'password' => 'required'
+        ]);
 
-            if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 422);
+        if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 422);
 
-            $credentials = $request->only('email', 'password');
-            //    dd($credentials);
-            if (\Auth::guard('admin')->attempt($credentials)) {
-                $user= Auth::guard('admin')->user();
-                // dd($user);
-                $success['name']  = $user->name;
-                $success['token'] = $user->createToken('accessToken',['admin'])->accessToken;
+        $credentials = $request->only('email', 'password');
 
-                return sendResponse($success, 'You are successfully logged in.');
-            } else {
-                return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
-            }
-        }
-        catch(\Exception $e){
-          return response()->json(['status'=>'error','code'=>'401', 'msg'=>'You  are not authorised']);
+        if (Auth::attempt($credentials)) {
+            $user             = Auth::user();
+            $success['name']  = $user->name;
+            $success['token'] = $user->createToken('accessToken')->accessToken;
+
+            return sendResponse($success, 'You are successfully logged in.');
+        } else {
+            return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
         }
     }
-   
-    
 
     /**
      * User registration API method
@@ -55,7 +46,7 @@ class AdminLoginController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function register(Request $request)
-    {  
+    {
         $validator = Validator::make($request->all(), [
             'name'     => 'required',
             'email'    => 'required|email|unique:users',
@@ -65,7 +56,7 @@ class AdminLoginController extends Controller
         if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 422);
 
         try {
-            $user = Admin::create([
+            $user = User::create([
                 'name'     => $request->name,
                 'email'    => $request->email,
                 'password' => bcrypt($request->password)
@@ -73,7 +64,7 @@ class AdminLoginController extends Controller
 
             $success['name']  = $user->name;
             $message          = 'Yay! A user has been successfully created.';
-            $success['token'] = $user->createToken('accessToken', ['admin'])->accessToken;
+            $success['token'] = $user->createToken('accessToken')->accessToken;
             
         } catch (Exception $e) {
             $success['token'] = [];

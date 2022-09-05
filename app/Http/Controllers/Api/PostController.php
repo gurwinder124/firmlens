@@ -20,6 +20,7 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::all();
+        $user=auth('api')->user();
 
         return sendResponse(PostResource::collection($posts), 'Posts retrieved successfully.');
     }
