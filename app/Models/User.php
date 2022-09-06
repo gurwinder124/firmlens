@@ -12,12 +12,10 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     * 
-     */ protected $guard = 'api';
+    public const IS_ACTIVE = 1;
+    public const NOT_ACTIVE = 0;
+
+      protected $guard = 'api';
     protected $fillable = [
         'name',
         'email',

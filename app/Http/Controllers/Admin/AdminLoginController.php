@@ -30,19 +30,17 @@ class AdminLoginController extends Controller
 
             $credentials = $request->only('email', 'password');
             //    dd($credentials);
-            if (\Auth::guard('admin')->attempt($credentials)) {
+            if(\Auth::guard('admin')->attempt($credentials)) {
                 $user= Auth::guard('admin')->user();
                 // dd($user);
                 $success['name']  = $user->name;
                 $success['token'] = $user->createToken('accessToken',['admin'])->accessToken;
 
-                return sendResponse($success, 'You are successfully logged in.');
-            } else {
-                return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
+                return response()->json(['status'=>'success','code'=>'200','data'=>$success]);
             }
         }
         catch(\Exception $e){
-          return response()->json(['status'=>'error','code'=>'401', 'msg'=>'You  are not authorised']);
+          return response()->json(['status'=>'error','code'=>'401', 'msg'=>$e->getmessage()]);
         }
     }
    
@@ -68,18 +66,18 @@ class AdminLoginController extends Controller
             $user = Admin::create([
                 'name'     => $request->name,
                 'email'    => $request->email,
-                'password' => bcrypt($request->password)
+                'password' =>  Hash::make($request->password),
             ]);
 
             $success['name']  = $user->name;
-            $message          = 'Yay! A user has been successfully created.';
             $success['token'] = $user->createToken('accessToken', ['admin'])->accessToken;
-            
+            return response()->json(['status'=>'success','code'=>'200','data'=>$success]);
+
         } catch (Exception $e) {
-            $success['token'] = [];
-            $message          = 'Oops! Unable to create a new user.';
+            return response()->json(['status'=>'error','code'=>'401', 'msg'=>$e->getmessage()]);
+
         }
 
-        return sendResponse($success, $message);
+       
     }
 }
