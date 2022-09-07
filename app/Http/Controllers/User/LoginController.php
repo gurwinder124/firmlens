@@ -18,6 +18,7 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         try {
+            //dd('test');
             $validator = Validator::make($request->all(), [
                 'email'    => 'required|email',
                 'password' => 'required'
@@ -28,11 +29,16 @@ class LoginController extends Controller
             $credentials = $request->only('email', 'password');
 
             if (Auth::attempt($credentials)) {
-                $user             = Auth::user();
-                $success['name']  = $user->name;
-                $success['token'] = $user->createToken('accessToken')->accessToken;
-
-                return sendResponse($success, 'You are successfully logged in.');
+                $user= Auth::user();
+                if ($user->is_active == USER::IS_ACTIVE) {
+                    $success['name']  = $user->name;
+                    $success['token'] = $user->createToken('accessToken')->accessToken;
+                    return sendResponse($success, 'You are successfully logged in.');
+                }
+                else{
+                    return response()->json(['status' => 'error', 'code' => '401', 'msg' => 'You  are not approved by admin']);
+                }
+               
             } else {
                 return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
             }
@@ -96,20 +102,34 @@ class LoginController extends Controller
             return response()->json(['code' => '302', 'error' => $validator->errors()]);
         }
         $loginuser = auth('api')->user();
+        //dd($loginuser);
         try {
             $user =  new User;
             $user->name = $request->name;
             $user->email = $request->email;
             $user->designation = $request->designation;
             $user->password = Hash::make($request->password);
-            $user->company_id = $loginuser->id;
+            $user->company_id = $loginuser->company_id;
             $user->is_root_user = 0;
             $user->is_active = User::IS_ACTIVE;
-            $user->parent_id = 1;
+            $user->parent_id = $loginuser->id;
             $user->save();
+
             return response()->json(['status' => 'Success', 'code' => 200, 'user' => $user]);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
+        }
+    }
+    public function userLogout(Request $request)
+    {
+        try {
+            if (Auth::guard('api')->user()) {
+                $user = Auth::user()->token();
+                $user->revoke();
+            }
+            return response()->json(['status' => 'success', 'code' => '200', 'msg' => 'Logout successfully']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'code' => '401', 'msg' => $e->getmessage()]);
         }
     }
 }

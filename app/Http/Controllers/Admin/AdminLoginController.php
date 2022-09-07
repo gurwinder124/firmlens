@@ -8,19 +8,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use App\Models\Admin;
+use App\Models\Designation;
+
+
 use Auth;
 
 class AdminLoginController extends Controller
 {
-    /**
-     * User login API method
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function login(Request $request)
     { //dd($request);
-        try{
+        try {
             $validator = Validator::make($request->all(), [
                 'email'    => 'required|email',
                 'password' => 'required'
@@ -30,30 +28,26 @@ class AdminLoginController extends Controller
 
             $credentials = $request->only('email', 'password');
             //    dd($credentials);
-            if(\Auth::guard('admin')->attempt($credentials)) {
-                $user= Auth::guard('admin')->user();
+            if (\Auth::guard('admin')->attempt($credentials)) {
+                $user = Auth::guard('admin')->user();
                 // dd($user);
                 $success['name']  = $user->name;
-                $success['token'] = $user->createToken('accessToken',['admin'])->accessToken;
+                $success['token'] = $user->createToken('accessToken', ['admin'])->accessToken;
 
-                return response()->json(['status'=>'success','code'=>'200','data'=>$success]);
+                return response()->json(['status' => 'success', 'code' => '200', 'data' => $success]);
+            } else {
+                return response()->json(['status' => 'error', 'code' => '404', 'msg' => ' Invalid credential']);
             }
-        }
-        catch(\Exception $e){
-          return response()->json(['status'=>'error','code'=>'401', 'msg'=>$e->getmessage()]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'code' => '401', 'msg' => $e->getmessage()]);
         }
     }
-   
-    
 
-    /**
-     * User registration API method
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+
+
+
     public function register(Request $request)
-    {  
+    {
         $validator = Validator::make($request->all(), [
             'name'     => 'required',
             'email'    => 'required|email|unique:users',
@@ -71,13 +65,54 @@ class AdminLoginController extends Controller
 
             $success['name']  = $user->name;
             $success['token'] = $user->createToken('accessToken', ['admin'])->accessToken;
-            return response()->json(['status'=>'success','code'=>'200','data'=>$success]);
+            return response()->json(['status' => 'success', 'code' => '200', 'data' => $success]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'code' => '401', 'msg' => $e->getmessage()]);
+        }
+    }
+    public function designationAdd(Request $request)
+    {
+        try {
+            $user = auth('admin-api')->user();
+            $validator = Validator::make($request->all(), [
+                'name'    => 'required',
+                'designation_slug' => 'required'
+            ]);
+
+            if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 422);
+
+            $designation = new Designation;
+            $designation->name = $request->name;
+            $designation->designation_slug = $request->designation_slug;
+            $designation->save();
+
+            return response()->json(['status' => 'success', 'code' => '200', 'data' => $designation]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'code' => '401', 'msg' => $e->getmessage()]);
+        }
+    }
+    public function designationList()
+    {
+        try {
+            $user = auth('admin-api')->user();
+            $designationlist = Designation::select('id', 'name', 'designation_slug')->get();
+            return response()->json(['status' => 'success', 'code' => '200', 'data' => $designationlist]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'code' => '401', 'msg' => $e->getmessage()]);
+        }
+    }
+    public function adminLogout(Request $request)
+    {
+        try {
+            if (Auth::guard('admin-api')->user()) // this means that the admin was logged in.
+            {
+                $user = Auth::user()->token();
+                $user->revoke();
+            }
+            return response()->json(['status' => 'success', 'code' => '200', 'msg' =>'Logout successfully']);
 
         } catch (Exception $e) {
-            return response()->json(['status'=>'error','code'=>'401', 'msg'=>$e->getmessage()]);
-
+            return response()->json(['status' => 'error', 'code' => '401', 'msg' => $e->getmessage()]);
         }
-
-       
     }
 }

@@ -1,24 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Admin;
+use App\Models\User;
 use App\Models\ForgotPassword;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Str;
 use DB;
 
-class ForgotController extends Controller
+class UserForgotController extends Controller
 {
     public function forget_password(Request $request)
     {
         try {
-            $user = Admin::where('email', $request->email)->get();
+            $user = User::where('email', $request->email)->get();
             if (count($user) > 0) {
                 $token = Str::random(40);
 
@@ -58,14 +58,14 @@ class ForgotController extends Controller
     {
         try {
             $reset = DB::table('forgot_passwords')->select('*')->where('token', $request->token)->first();
-            $startTime= Carbon::parse($reset->created_at);
-            $finishtime= Carbon::parse(Carbon::now()->format('Y-m-d H:i:s'));
+            $startTime = Carbon::parse($reset->created_at);
+            $finishtime = Carbon::parse(Carbon::now()->format('Y-m-d H:i:s'));
             $durationtime=$startTime->diffInMinutes( $finishtime);
            if( $durationtime >60){
             return response()->json(['status' => 'error', 'code' => '404', 'msg' => 'Token expire, Please try again']);
            }
             if (isset($request->token) && $reset != "") {
-                $user = Admin::where('email', $reset->email)->first();
+                $user = User::where('email', $reset->email)->first();
                 return response()->json(['status' => 'success', 'code' => '200', 'msg' => $user]);
             } else {
                 return response()->json(['status' => 'error', 'code' => '404', 'message' => "token not found"]);
@@ -84,7 +84,7 @@ class ForgotController extends Controller
             if ($validator->fails()) {
                 return response()->json(['code' => '302', 'error' => $validator->errors()]);
             }
-            $user = Admin::find($request->id);
+            $user = User::find($request->id);
           
             $user->password = Hash::make($request->password);
             $user->save();

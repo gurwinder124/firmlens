@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Company;
+use Illuminate\Support\Facades\Validator;
+
 use App\Models\User;
 
 use Exception;
@@ -30,24 +32,24 @@ class AdminController extends Controller
     }
     public function updateCompanyStatus(Request $req)
     {
-
         try {
             $user = auth('admin-api')->user();
             $id = $req->id;
             $getstatus = $req->status;
-            // dd($req);
-            if ($getstatus == "approved") {
-                $status = Company::REQUEST_STATUS_APPROVED;
-                $user_status = User::IS_ACTIVE;
-            } else {
-                $status = Company::REQUEST_STATUS_REJECT;
-                $user_status =User::NOT_ACTIVE;
-            }
-            $companystatus = Company::where('id',  $id)->update([
-                'request_status' => $status
+            if($getstatus==2){
+               $user=User::where('company_id',  $id)->update([
+                'is_active' => 1
+                
             ]);
+            //dd($user);
+            }
+           
+            $companystatus = Company::where('id',  $id)->update([
+                'request_status' => $getstatus
+            ]);
+           
             // $userstatus= User::
-            return response()->json(['status' => 'Success', 'code' => 200, 'data' => $companystatus]);
+            return response()->json(['status' => 'Success', 'code' => 200, 'msg' =>'Company status updated ' ]);
         } catch (Exeception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
@@ -74,7 +76,6 @@ class AdminController extends Controller
             $companylist = Company::select("*")->when($status, function($query, $status){
                 return $query->where('request_status', $status);
             })->get();
-            //  dd($companylist);
             return response()->json(['status' => 'Success', 'code' => 200, 'data' => $companylist]);
         } catch (Exeception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
