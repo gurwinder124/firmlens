@@ -106,7 +106,7 @@ class AdminLoginController extends Controller
         try {
             if (Auth::guard('admin-api')->user()) // this means that the admin was logged in.
             {
-                $user = Auth::user()->token();
+                $user = Auth::user('admin-api')->token();
                 $user->revoke();
             }
             return response()->json(['status' => 'success', 'code' => '200', 'msg' =>'Logout successfully']);

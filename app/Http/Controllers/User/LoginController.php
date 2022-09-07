@@ -124,7 +124,7 @@ class LoginController extends Controller
     {
         try {
             if (Auth::guard('api')->user()) {
-                $user = Auth::user()->token();
+                $user = Auth::user('api')->token();
                 $user->revoke();
             }
             return response()->json(['status' => 'success', 'code' => '200', 'msg' => 'Logout successfully']);
