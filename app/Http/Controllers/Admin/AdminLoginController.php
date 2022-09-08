@@ -28,7 +28,7 @@ class AdminLoginController extends Controller
 
             $credentials = $request->only('email', 'password');
             //    dd($credentials);
-            if (\Auth::guard('admin')->attempt($credentials)) {
+            if (\Auth::guard('admin-api')->attempt($credentials)) {
                 $user = Auth::guard('admin')->user();
                 // dd($user);
                 $success['name']  = $user->name;
@@ -108,9 +108,9 @@ class AdminLoginController extends Controller
             {
                 $user = Auth::user('admin-api')->token();
                 $user->revoke();
-            }
+            
             return response()->json(['status' => 'success', 'code' => '200', 'msg' =>'Logout successfully']);
-
+            }
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '401', 'msg' => $e->getmessage()]);
         }

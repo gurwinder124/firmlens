@@ -8,6 +8,9 @@ use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Jobs\SendNewRegisterEmail;
+use App\Jobs\SendWelcomeEmail;
+use App\Models\Admin;
 use Exception;
 use Hash;
 
@@ -79,6 +82,26 @@ class LoginController extends Controller
             $user->is_active = User::NOT_ACTIVE;
             $user->parent_id = 0;
             $user->save();
+            $admin=Admin::select('name','email')->where('id','=',2)->first();
+            
+            $email=$admin->email;
+            $name=$admin->name;
+            $data = [
+                'to' =>  $email,
+                'name' => $name,
+                'company_name' =>$request->company_name,
+                'data' => "Thanks ",
+                'subject' => "Regarding Register new User"
+            ];
+            $welcomedata=[
+                'to'=>$request->email,
+                'name'=>$request->name,
+                'data' => "Thanks ",
+                'subject' => "Regarding Welcome"
+            ];
+            dispatch(new SendNewRegisterEmail($data))->afterResponse();
+            dispatch(new SendWelcomeEmail($welcomedata))->afterResponse();
+
 
             return response()->json(['status' => 'Success', 'code' => 200, 'data' => $company, 'user' => $user]);
         } catch (Exception $e) {

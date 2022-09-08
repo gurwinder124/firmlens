@@ -7,9 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Company;
 use Illuminate\Support\Facades\Validator;
-
+use App\Jobs\CompanyStatusEmail;
 use App\Models\User;
-
 use Exception;
 
 class AdminController extends Controller
@@ -43,20 +42,35 @@ class AdminController extends Controller
             $user = auth('admin-api')->user();
             $id = $req->id;
             $getstatus = $req->status;
-            if ($getstatus == 2) {
-                $user = User::where('company_id',  $id)->update([
-                    'is_active' => 1
-
-                ]);
-                //dd($user);
-            }
+         
             $companystatus = Company::where('id',  $id)->update([
                 'request_status' => $getstatus
             ]);
+            $subject="Regarding Registration declined";
+            if ($getstatus == 2) {
+                $user = User::where('company_id',  $id)->update([
+                    'is_active' => 1
+                ]);
+                $subject="Regarding Registration Accepted";
+            }
+           
+            $this->sendacceptmail($id, $companystatus, $subject);
             return response()->json(['status' => 'Success', 'code' => 200, 'msg' => 'Company status updated ']);
         } catch (Exeception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
+    }
+    public function sendacceptmail($id,$status, $subject){
+        $user = User::where('company_id',  $id)->first();
+        $data=[
+            'to'=>$user->email,
+            'name'=>$user->name,
+            'data'=>'Thanks',
+            'status'=>$status,
+            'subject' => $subject,
+        ];
+     dispatch(new CompanyStatusEmail($data))->afterResponse();
+
     }
     public function comapnyApprovedList()
     {

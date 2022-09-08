@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Admin;
 use App\Models\ForgotPassword;
+use App\Jobs\ForgotPasswordEmail;
+
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Str;
@@ -22,20 +24,17 @@ class ForgotController extends Controller
             if (count($user) > 0) {
                 $token = Str::random(40);
 
-                // $domain=URL::to('https://stgn.appsndevs.com/metaland');
-                $url = 'https://stgn.appsndevs.com/metaland/resetPassword?token=' . $token;
+                $url = env('FRONTEND_URL').'/reset_password?token='.$token;
 
                 $name = $user[0]['name'];
-                $user['to'] = $request->email;
-                //  $data['url']=$url;
-                //  $data['email']=$request->email;
-                //  $data['title']="Password reset";
-                //  $data['body']="Please click on below link";
-                $data = ['url' => $url, 'name' => $name, 'email' => $request->email, 'title' => "Reset password", 'subject' => "Regarding lead assigned"];
-
-                // Mail::send('forgetPasword', $data, function ($message) use ($user) {
-                //     $message->to($user['to'])->subject('Regarding password reset');
-                // });
+                
+                $data = [
+                    'to' =>$request->email,
+                    'url' => $url, 
+                    'name' => $name, 
+                    'data'=>"Thanks",
+                    'subject' => "Regarding change Password"
+                ];
                 $datetime = Carbon::now()->format('Y-m-d H:i:s');
                 ForgotPassword::updateOrCreate(
                     ['email' => $request->email],
@@ -44,12 +43,15 @@ class ForgotController extends Controller
                         'token' => $token,
                         'created_at' => $datetime
                     ]
-
                 );
+                dispatch(new ForgotPasswordEmail($data));
+
+
+
                 return response()->json(['status' => 'success', 'code' => '200', 'msg' => 'Plaese check your mail to  reset your password']);
-            } else {
+            } 
                 return response()->json(['status' => 'error', 'code' => '400', 'data' => 'user not found']);
-            }
+            
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'message' => $e->getmessage()]);
         }
@@ -60,7 +62,7 @@ class ForgotController extends Controller
             $reset = DB::table('forgot_passwords')->select('*')->where('token', $request->token)->first();
             $startTime= Carbon::parse($reset->created_at);
             $finishtime= Carbon::parse(Carbon::now()->format('Y-m-d H:i:s'));
-            $durationtime=$startTime->diffInMinutes( $finishtime);
+            $durationtime=$startTime->diffInMinutes($finishtime);
            if( $durationtime >60){
             return response()->json(['status' => 'error', 'code' => '404', 'msg' => 'Token expire, Please try again']);
            }
