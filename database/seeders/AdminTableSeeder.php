@@ -20,8 +20,8 @@ class AdminTableSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'superadmin@yopmail.com',
             'password' => Hash::make('mind@123'),
-            'created_by'=>'Super Admin',
-            'updated_by'=>'Super Admin'
+            'created_at'=>date('Y-m-d H:i:s', rand(1662100000, 1662113343)),
+           
         ]);
     }
 }

@@ -17,7 +17,7 @@ class CompanyFactory extends Factory
         return [
             'company_name' => $this->faker->Company(),
             'company_type' => $this->faker->text(5),
-            'request_status' =>rand(1,2,3),
+            'request_status' =>rand(1,3),
             'created_at'=> date('Y-m-d H:i:s',rand(1662100000,1662113343))
         ];
     }
