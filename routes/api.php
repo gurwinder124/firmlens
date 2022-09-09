@@ -7,11 +7,14 @@ use App\Http\Controllers\Admin\AdminLoginController;
 use App\Http\Controllers\Admin\ForgotController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\User\CompanyController;
+use App\Http\Controllers\User\BlogsController;
+use App\Http\Controllers\User\QuestionController;
+
 
 use App\Http\Controllers\User\UserForgotController;
 
 
-/*
+/*BlogsController
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
@@ -33,7 +36,16 @@ Route::prefix('v1')->group(function () {
         Route::post('create-sub-user', [LoginController::class, 'createSubUser']);
         Route::post('employee-list', [CompanyController::class, 'employeeListById']);
         Route::post('user-logout', [LoginController::class, 'userLogout']);
-
+        // blogsroute
+        Route::post('add-blogs', [BlogsController::class, 'addBlogs']);
+        Route::post('update-blogs', [BlogsController::class, 'updateBlogs']);
+        Route::post('delete-blogs', [BlogsController::class, 'deleteBlogs']);
+        Route::get('blogs-list', [BlogsController::class, 'blogsList']);
+        //questionroute
+        Route::post('add-question', [QuestionController::class, 'addQuestion']);
+        Route::post('update-question', [QuestionController::class, 'updateQuestions']);
+        Route::post('delete-question', [QuestionController::class, 'deleteQuestion']);
+        Route::get('question-list', [QuestionController::class, 'questionList']);
     });
 });
 //ADMIN ROUTE

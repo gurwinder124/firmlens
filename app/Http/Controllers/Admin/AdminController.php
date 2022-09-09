@@ -16,16 +16,12 @@ class AdminController extends Controller
 
     public function companyPendingList()
     {
-        //dd("test");
         try {
             $user = auth('admin-api')->user();
-            //dd($user);
             $req =  Company::REQUEST_STATUS_PENDING;
-            //dd($req);
             $companylist = Company::where('request_status', '=', $req)->get();
-            //dd($companylist->toarray());
             return response()->json(['status' => 'Success', 'code' => 200, 'data' => $companylist]);
-        } catch (\Exeception $e) {
+        } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
     }
@@ -39,7 +35,7 @@ class AdminController extends Controller
             if ($validator->fails()) {
                 return response()->json(['code' => '302', 'error' => $validator->errors()]);
             }
-            $user = auth('admin-api')->user();
+            $user = auth('admin')->user();
             $id = $req->id;
             $getstatus = $req->status;
          
@@ -56,7 +52,7 @@ class AdminController extends Controller
            
             $this->sendacceptmail($id, $companystatus, $subject);
             return response()->json(['status' => 'Success', 'code' => 200, 'msg' => 'Company status updated ']);
-        } catch (Exeception $e) {
+        } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
     }
@@ -74,15 +70,12 @@ class AdminController extends Controller
     }
     public function comapnyApprovedList()
     {
-        //dd("test");
         try {
             $user = auth('admin-api')->user();
             $req =  Company::REQUEST_STATUS_APPROVED;
-            //dd($req);
             $companylist = Company::where('request_status', '=', $req)->get();
-            //dd($companylist->toarray());
             return response()->json(['status' => 'Success', 'code' => 200, 'data' => $companylist]);
-        } catch (Exeception $e) {
+        } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
     }
@@ -93,9 +86,9 @@ class AdminController extends Controller
             $status = $request->status;
             $companylist = Company::select("*")->when($status, function ($query, $status) {
                 return $query->where('request_status', $status);
-            })->get();
+            })->orderBy('created_at', 'DESC')->paginate(10);
             return response()->json(['status' => 'Success', 'code' => 200, 'data' => $companylist]);
-        } catch (Exeception $e) {
+        } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
     }

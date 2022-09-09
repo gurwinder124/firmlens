@@ -21,21 +21,12 @@ class UserForgotController extends Controller
             $user = User::where('email', $request->email)->get();
             if (count($user) > 0) {
                 $token = Str::random(40);
-
-                // $domain=URL::to('https://stgn.appsndevs.com/metaland');
                 $url = 'https://stgn.appsndevs.com/metaland/resetPassword?token=' . $token;
 
                 $name = $user[0]['name'];
                 $user['to'] = $request->email;
-                //  $data['url']=$url;
-                //  $data['email']=$request->email;
-                //  $data['title']="Password reset";
-                //  $data['body']="Please click on below link";
+              
                 $data = ['url' => $url, 'name' => $name, 'email' => $request->email, 'title' => "Reset password", 'subject' => "Regarding lead assigned"];
-
-                // Mail::send('forgetPasword', $data, function ($message) use ($user) {
-                //     $message->to($user['to'])->subject('Regarding password reset');
-                // });
                 $datetime = Carbon::now()->format('Y-m-d H:i:s');
                 ForgotPassword::updateOrCreate(
                     ['email' => $request->email],
@@ -67,9 +58,9 @@ class UserForgotController extends Controller
             if (isset($request->token) && $reset != "") {
                 $user = User::where('email', $reset->email)->first();
                 return response()->json(['status' => 'success', 'code' => '200', 'msg' => $user]);
-            } else {
+            } 
                 return response()->json(['status' => 'error', 'code' => '404', 'message' => "token not found"]);
-            }
+            
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'message' => $e->getmessage()]);
         }
@@ -85,10 +76,9 @@ class UserForgotController extends Controller
                 return response()->json(['code' => '302', 'error' => $validator->errors()]);
             }
             $user = User::find($request->id);
-          
             $user->password = Hash::make($request->password);
             $user->save();
-             ForgotPassword::where('email', $user->email)->delete();
+            ForgotPassword::where('email', $user->email)->delete();
             return response()->json(['status' => 'success', 'code' => '200', 'msg' => "password updated"]);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'message' => $e->getmessage()]);

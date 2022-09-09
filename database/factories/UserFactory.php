@@ -31,6 +31,7 @@ class UserFactory extends Factory
             'designation'=> $this->faker->text(5),
             'company_id'=> rand(1,50),
             'is_root_user'=>'0',
+            'is_active'=>'1',
             'parent_id'=>'0',
             'password' => Hash::make('mind@123'), // password
             'created_at'=> date('Y-m-d H:i:s',rand(1662100000,1662113343))

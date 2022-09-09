@@ -17,7 +17,8 @@ class AdminLoginController extends Controller
 {
 
     public function login(Request $request)
-    { //dd($request);
+    { 
+        //dd($request);
         try {
             $validator = Validator::make($request->all(), [
                 'email'    => 'required|email',
@@ -28,7 +29,7 @@ class AdminLoginController extends Controller
 
             $credentials = $request->only('email', 'password');
             //    dd($credentials);
-            if (\Auth::guard('admin-api')->attempt($credentials)) {
+            if (\Auth::guard('admin')->attempt($credentials)) {
                 $user = Auth::guard('admin')->user();
                 // dd($user);
                 $success['name']  = $user->name;
@@ -104,11 +105,10 @@ class AdminLoginController extends Controller
     public function adminLogout(Request $request)
     {
         try {
-            if (Auth::guard('admin-api')->user()) // this means that the admin was logged in.
+            if (Auth::guard('admin')->user()) // this means that the admin was logged in.
             {
                 $user = Auth::user('admin-api')->token();
                 $user->revoke();
-            
             return response()->json(['status' => 'success', 'code' => '200', 'msg' =>'Logout successfully']);
             }
         } catch (Exception $e) {

@@ -20,6 +20,7 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        //dd("test");
         try {
             //dd('test');
             $validator = Validator::make($request->all(), [
@@ -42,7 +43,7 @@ class LoginController extends Controller
                     return response()->json(['status' => 'error', 'code' => '401', 'msg' => 'You  are not approved by admin']);
                 }
                
-            } else {
+            }else {
                 return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
             }
         } catch (\Exception $e) {
@@ -83,7 +84,6 @@ class LoginController extends Controller
             $user->parent_id = 0;
             $user->save();
             $admin=Admin::select('name','email')->where('id','=',2)->first();
-            
             $email=$admin->email;
             $name=$admin->name;
             $data = [
@@ -101,8 +101,6 @@ class LoginController extends Controller
             ];
             dispatch(new SendNewRegisterEmail($data))->afterResponse();
             dispatch(new SendWelcomeEmail($welcomedata))->afterResponse();
-
-
             return response()->json(['status' => 'Success', 'code' => 200, 'data' => $company, 'user' => $user]);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
@@ -149,8 +147,8 @@ class LoginController extends Controller
             if (Auth::guard('api')->user()) {
                 $user = Auth::user('api')->token();
                 $user->revoke();
+                return response()->json(['status' => 'success', 'code' => '200', 'msg' => 'Logout successfully']);
             }
-            return response()->json(['status' => 'success', 'code' => '200', 'msg' => 'Logout successfully']);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '401', 'msg' => $e->getmessage()]);
         }
