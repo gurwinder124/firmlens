@@ -5,6 +5,8 @@ namespace Database\Factories;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+
 
 class UserFactory extends Factory
 {
@@ -28,10 +30,9 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'designation'=> $this->faker->text(5),
             'company_id'=> rand(1,50),
-            'is_root_user'=>rand(0,1),
-            'parent_id'=>rand(1,50),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'remember_token' => Str::random(10),
+            'is_root_user'=>'0',
+            'parent_id'=>'0',
+            'password' => Hash::make('mind@123'), // password
             'created_at'=> date('Y-m-d H:i:s',rand(1662100000,1662113343))
         ];
     }
