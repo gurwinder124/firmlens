@@ -9,8 +9,9 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\User\CompanyController;
 use App\Http\Controllers\User\BlogsController;
 use App\Http\Controllers\User\QuestionController;
-
-
+use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\ReviewController;
+use App\Http\Controllers\User\ChatController;
 use App\Http\Controllers\User\UserForgotController;
 
 
@@ -26,13 +27,14 @@ use App\Http\Controllers\User\UserForgotController;
 */
 // USER ROUTE
 Route::prefix('v1')->group(function () {
+
     Route::post('login', [LoginController::class, 'login']);
     Route::post('registerCompany', [LoginController::class, 'registerCompany']);
     Route::post('forget_password', [UserForgotController::class, 'forget_password']);
     Route::get('reset_password', [UserForgotController::class, 'reset_password']);
     Route::post('update-new-password', [UserForgotController::class, 'updateNewPassword']);
     //PROTDECTED ROUTE
-    Route::middleware('auth:api')->group(function () {
+    Route::middleware('auth:api')->group(function (){
         Route::post('create-sub-user', [LoginController::class, 'createSubUser']);
         Route::post('employee-list', [CompanyController::class, 'employeeListById']);
         Route::post('user-logout', [LoginController::class, 'userLogout']);
@@ -46,6 +48,17 @@ Route::prefix('v1')->group(function () {
         Route::post('update-question', [QuestionController::class, 'updateQuestions']);
         Route::post('delete-question', [QuestionController::class, 'deleteQuestion']);
         Route::get('question-list', [QuestionController::class, 'questionList']);
+        //edit sub user
+        Route::post('update-sub-user', [UserController::class, 'updateSubUser']);
+        //delete sub user
+        Route::post('delete-sub-user', [UserController::class, 'deleteSubUser']);
+        // review user route
+        Route::post('add-review', [ReviewController::class, 'addReview']);
+        Route::post('update-review', [ReviewController::class, 'updateReview']);
+        Route::get('review-list', [ReviewController::class, 'ReviewList']);
+        //chating route
+        Route::post('chating', [ChatController::class, 'Chating']);
+
     });
 });
 //ADMIN ROUTE

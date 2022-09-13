@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\ForgotPassword;
 use Carbon\Carbon;
+use Exception;
 use Str;
 use DB;
 

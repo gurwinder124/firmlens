@@ -31,11 +31,12 @@ class LoginController extends Controller
             if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 422);
 
             $credentials = $request->only('email', 'password');
+            //dd($credentials);
 
             if (Auth::attempt($credentials)) {
                 $user= Auth::user();
                 if ($user->is_active == USER::IS_ACTIVE) {
-                    $success['name']  = $user->name;
+                    $success['user']  = $user;
                     $success['token'] = $user->createToken('accessToken')->accessToken;
                     return sendResponse($success, 'You are successfully logged in.');
                 }
@@ -44,7 +45,7 @@ class LoginController extends Controller
                 }
                
             }else {
-                return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
+                return sendError('Unauthorised', ['error' => 'invalid credentials'], 401);
             }
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'code' => '401', 'msg' => 'You  are not authorised']);
@@ -60,7 +61,7 @@ class LoginController extends Controller
                 'email' => 'required| email',
                 'password' => 'required',
                 'designation' => 'required',
-                'name' => 'required',
+                'first_name' => 'required',
             ]);
             if ($validator->fails()) {
                 return response()->json(['code' => '302', 'error' => $validator->errors()]);
@@ -74,7 +75,8 @@ class LoginController extends Controller
 
 
             $user = new User;
-            $user->name = $request->name;
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
             $user->email = $request->email;
             $user->designation = $request->designation;
             $user->password = Hash::make($request->password);
@@ -83,7 +85,7 @@ class LoginController extends Controller
             $user->is_active = User::NOT_ACTIVE;
             $user->parent_id = 0;
             $user->save();
-            $admin=Admin::select('name','email')->where('id','=',2)->first();
+            $admin=Admin::select('name','email')->where('id','=',1)->first();
             $email=$admin->email;
             $name=$admin->name;
             $data = [
@@ -95,7 +97,7 @@ class LoginController extends Controller
             ];
             $welcomedata=[
                 'to'=>$request->email,
-                'name'=>$request->name,
+                'name'=>$request->first_name,
                 'data' => "Thanks ",
                 'subject' => "Regarding Welcome"
             ];
@@ -113,7 +115,7 @@ class LoginController extends Controller
     public function createSubUser(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'     => 'required',
+            'first_name'     => 'required',
             'email'    => 'required|email|unique:users',
             'password' => 'required|min:8',
             'designation' => 'required',
@@ -126,7 +128,8 @@ class LoginController extends Controller
         //dd($loginuser);
         try {
             $user =  new User;
-            $user->name = $request->name;
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
             $user->email = $request->email;
             $user->designation = $request->designation;
             $user->password = Hash::make($request->password);

@@ -35,7 +35,8 @@ class AdminController extends Controller
             if ($validator->fails()) {
                 return response()->json(['code' => '302', 'error' => $validator->errors()]);
             }
-            $user = auth('admin')->user();
+            $user = auth('admin-api')->user();
+            //dd( $user->email);
             $id = $req->id;
             $getstatus = $req->status;
          
@@ -49,8 +50,10 @@ class AdminController extends Controller
                 ]);
                 $subject="Regarding Registration Accepted";
             }
+            //dd('test');
            
             $this->sendacceptmail($id, $companystatus, $subject);
+           // dd('test');
             return response()->json(['status' => 'Success', 'code' => 200, 'msg' => 'Company status updated ']);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
@@ -58,9 +61,10 @@ class AdminController extends Controller
     }
     public function sendacceptmail($id,$status, $subject){
         $user = User::where('company_id',  $id)->first();
+        //dd(  $user);
         $data=[
             'to'=>$user->email,
-            'name'=>$user->name,
+            'name'=>$user->first_name,
             'data'=>'Thanks',
             'status'=>$status,
             'subject' => $subject,
@@ -86,7 +90,7 @@ class AdminController extends Controller
             $status = $request->status;
             $companylist = Company::select("*")->when($status, function ($query, $status) {
                 return $query->where('request_status', $status);
-            })->orderBy('created_at', 'DESC')->paginate(10);
+            })->orderBy('created_at', 'DESC')->get();
             return response()->json(['status' => 'Success', 'code' => 200, 'data' => $companylist]);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
