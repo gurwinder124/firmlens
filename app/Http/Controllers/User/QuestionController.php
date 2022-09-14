@@ -5,7 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Question;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 

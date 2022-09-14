@@ -56,9 +56,11 @@ Route::prefix('v1')->group(function () {
         Route::post('add-review', [ReviewController::class, 'addReview']);
         Route::post('update-review', [ReviewController::class, 'updateReview']);
         Route::get('review-list', [ReviewController::class, 'ReviewList']);
+        // company list
+        Route::get('company-list-byuser', [CompanyController::class, 'companyListByUser']);
         //chating route
         Route::post('chating', [ChatController::class, 'Chating']);
-
+        Route::get('show-chating', [ChatController::class, 'showChating']);
     });
 });
 //ADMIN ROUTE

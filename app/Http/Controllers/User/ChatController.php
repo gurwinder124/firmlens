@@ -34,5 +34,15 @@ class ChatController extends Controller
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
     }
+    public function  showChating(Request $request)
+    {
+        try {
+            $loginuser = auth('api')->user();
+            $chating = Chat::select('from_id','to_id','message')->where('from_id','=',$loginuser->id)->orwhere('to_id','=',$loginuser->id)->orderBy('created_at', 'DESC')->get();
+            return response()->json(['status' => 'Success', 'code' => 200, 'data' => $chating]);
+        } catch (Exception $e){
+            return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
+        }
+    }
    
 }
