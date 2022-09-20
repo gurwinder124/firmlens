@@ -13,6 +13,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\ReviewController;
 use App\Http\Controllers\User\ChatController;
 use App\Http\Controllers\User\UserForgotController;
+use App\Http\Controllers\Admin\SocialController;
 
 
 /*BlogsController
@@ -25,6 +26,10 @@ use App\Http\Controllers\User\UserForgotController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+//  PUBLIC ROUTE
+Route::get('social-media-list', [SocialController::class, 'socialMediaList']);
+
 // USER ROUTE
 Route::prefix('v1')->group(function () {
 
@@ -73,6 +78,12 @@ Route::prefix('admin')->group(function (){
     Route::post('update-new-password', [ForgotController::class, 'updateNewPassword']);
     //protected route
     Route::middleware(['auth:admin-api'])->group(function () {
+
+        // SOCIAL ROUTE
+        Route::post('create-social-media', [SocialController::class, 'createSocialMedia']);
+        Route::post('update-social-media', [SocialController::class, 'updateSocialMedia']);
+        Route::post('delete-social-media', [SocialController::class, 'deleteSocialMedia']);
+         // END SOCIAL ROUTE
         Route::get('pending-list', [AdminController::class, 'companyPendingList']);
         Route::post('update-company-status', [AdminController::class, 'updateCompanyStatus']);
         Route::get('comapny-count-list', [AdminController::class, 'comapnyCountList']);

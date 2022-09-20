@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Admin;
 use App\Models\ForgotPassword;
 use App\Jobs\ForgotPasswordEmail;
-
+use Exception;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Str;
