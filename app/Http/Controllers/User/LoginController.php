@@ -20,9 +20,7 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        //dd("test");
         try {
-            //dd('test');
             $validator = Validator::make($request->all(), [
                 'email'    => 'required|email',
                 'password' => 'required'
@@ -31,8 +29,6 @@ class LoginController extends Controller
             if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 422);
 
             $credentials = $request->only('email', 'password');
-            //dd($credentials);
-
             if (Auth::attempt($credentials)) {
                 $user= Auth::user();
                 if ($user->is_active == USER::IS_ACTIVE) {

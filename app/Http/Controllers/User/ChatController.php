@@ -8,7 +8,6 @@ use App\Models\Chat;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 
-
 class ChatController extends Controller
 {
     public function  Chating(Request $request)
@@ -17,8 +16,6 @@ class ChatController extends Controller
             $validator = Validator::make($request->all(), [
                 'to_id'     => 'required',
                 'message'    => 'required',
-                
-               
             ]);
             if ($validator->fails()) {
                 return response()->json(['code' => '302', 'error' => $validator->errors()]);

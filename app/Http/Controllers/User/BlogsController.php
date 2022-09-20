@@ -64,16 +64,13 @@ class BlogsController extends Controller
     public function deleteBlogs(Request $request)
     {
         try {
-           
                 $validator = Validator::make($request->all(), [
                     'id'     => 'required',
-                 
                 ]);
                 if ($validator->fails()) {
                     return response()->json(['code' => '302', 'error' => $validator->errors()]);
                 }
             $data = Blogs::findorfail($request->id)->delete();
-           
             return response()->json(['status' => 'Success', 'code' => 200, 'user' => $data]);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
@@ -85,7 +82,6 @@ class BlogsController extends Controller
             $data = Blogs::all();
             if(is_null($data) ){
                 return response()->json(['status' => 'error', 'code' => '404', 'meassage' => 'no data']);
-
             }
             return response()->json(['status' => 'Success', 'code' => 200, 'data' => $data]);
         } catch (Exception $e) {

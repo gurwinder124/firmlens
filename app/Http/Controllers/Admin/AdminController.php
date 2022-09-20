@@ -39,7 +39,6 @@ class AdminController extends Controller
             //dd( $user->email);
             $id = $req->id;
             $getstatus = $req->status;
-         
             $companystatus = Company::where('id',  $id)->update([
                 'request_status' => $getstatus
             ]);
@@ -50,18 +49,14 @@ class AdminController extends Controller
                 ]);
                 $subject="Regarding Registration Accepted";
             }
-            //dd('test');
-           
             $this->sendacceptmail($id, $companystatus, $subject);
-           // dd('test');
             return response()->json(['status' => 'Success', 'code' => 200, 'msg' => 'Company status updated ']);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
     }
-    public function sendacceptmail($id,$status, $subject){
+    public function sendacceptmail($id,$status,$subject){
         $user = User::where('company_id',  $id)->first();
-        //dd(  $user);
         $data=[
             'to'=>$user->email,
             'name'=>$user->first_name,
@@ -70,15 +65,22 @@ class AdminController extends Controller
             'subject' => $subject,
         ];
      dispatch(new CompanyStatusEmail($data))->afterResponse();
-
     }
-    public function comapnyApprovedList()
+    public function comapnyCountList()
     {
         try {
             $user = auth('admin-api')->user();
-            $req =  Company::REQUEST_STATUS_APPROVED;
-            $companylist = Company::where('request_status', '=', $req)->get();
-            return response()->json(['status' => 'Success', 'code' => 200, 'data' => $companylist]);
+            //dd($user);
+            $data = [];
+            $data['totalcomapny_list']= Company::count();
+            $req = Company::REQUEST_STATUS_APPROVED;
+            $data['totalapproved'] = Company::where('request_status', '=', $req)->count();
+            $req = Company::REQUEST_STATUS_PENDING;
+            $data['totalpending'] = Company::where('request_status', '=', $req)->count();
+            $req = Company::REQUEST_STATUS_REJECT;
+            $data['totalrejected'] = Company::where('request_status', '=', $req)->count();
+            
+            return response()->json(['status' => 'Success', 'code' => 200, 'data' => $data]);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
@@ -88,15 +90,17 @@ class AdminController extends Controller
         try {
             $user = auth('admin-api')->user();
             $status = $request->status;
-            $companylist = Company::select("*")->when($status, function ($query, $status) {
+            $data=[];
+            $data['company_list'] = Company::select("*")->when($status, function ($query, $status) {
                 return $query->where('request_status', $status);
             })->orderBy('created_at', 'DESC')->get();
-            return response()->json(['status' => 'Success', 'code' => 200, 'data' => $companylist]);
+           $data['company_count']=  $data['company_list']->count();
+           
+            return response()->json(['status' => 'Success', 'code' => 200, 'data' => $data]);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
     }
-
     function getCompStatus()
     {
         return response()->json(['status' => 200, 'data' => Company::getCompStatus()]);

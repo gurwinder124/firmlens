@@ -23,11 +23,8 @@ class ForgotController extends Controller
             $user = Admin::where('email', $request->email)->get();
             if (count($user) > 0) {
                 $token = Str::random(40);
-
                 $url = env('FRONTEND_URL').'/reset_password?token='.$token;
-
                 $name = $user[0]['name'];
-                
                 $data = [
                     'to' =>$request->email,
                     'url' => $url, 
@@ -45,14 +42,11 @@ class ForgotController extends Controller
                     ]
                 );
                 dispatch(new ForgotPasswordEmail($data));
-
-
-
                 return response()->json(['status' => 'success', 'code' => '200', 'msg' => 'Plaese check your mail to  reset your password']);
             } 
                 return response()->json(['status' => 'error', 'code' => '400', 'data' => 'user not found']);
             
-        } catch (Exception $e) {
+        } catch (Exception $e){
             return response()->json(['status' => 'error', 'code' => '500', 'message' => $e->getmessage()]);
         }
     }
@@ -87,7 +81,6 @@ class ForgotController extends Controller
                 return response()->json(['code' => '302', 'error' => $validator->errors()]);
             }
             $user = Admin::find($request->id);
-          
             $user->password = Hash::make($request->password);
             $user->save();
              ForgotPassword::where('email', $user->email)->delete();

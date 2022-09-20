@@ -29,7 +29,7 @@ use App\Http\Controllers\User\UserForgotController;
 Route::prefix('v1')->group(function () {
 
     Route::post('login', [LoginController::class, 'login']);
-    Route::post('registerCompany', [LoginController::class, 'registerCompany']);
+    Route::post('register-company', [LoginController::class, 'registerCompany']);
     Route::post('forget_password', [UserForgotController::class, 'forget_password']);
     Route::get('reset_password', [UserForgotController::class, 'reset_password']);
     Route::post('update-new-password', [UserForgotController::class, 'updateNewPassword']);
@@ -75,7 +75,7 @@ Route::prefix('admin')->group(function (){
     Route::middleware(['auth:admin-api'])->group(function () {
         Route::get('pending-list', [AdminController::class, 'companyPendingList']);
         Route::post('update-company-status', [AdminController::class, 'updateCompanyStatus']);
-        Route::get('comapny-approved-list', [AdminController::class, 'comapnyApprovedList']);
+        Route::get('comapny-count-list', [AdminController::class, 'comapnyCountList']);
         Route::post('company-list', [AdminController::class, 'companyList']);
         Route::get('designation-list', [AdminLoginController::class, 'designationList']);
         Route::get('get-comp-status', [AdminController::class, 'getCompStatus']);

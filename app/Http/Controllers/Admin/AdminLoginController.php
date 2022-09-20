@@ -4,29 +4,25 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Auth;
+ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use App\Models\Admin;
 use App\Models\Designation;
 
 
-use Auth;
+
 
 class AdminLoginController extends Controller
 {
-
     public function login(Request $request)
     { 
-        //dd($request);
         try {
             $validator = Validator::make($request->all(), [
                 'email'    => 'required|email',
                 'password' => 'required'
             ]);
-
             if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 422);
-
             $credentials = $request->only('email', 'password');
             //    dd($credentials);
             if (\Auth::guard('admin')->attempt($credentials)) {
@@ -63,7 +59,6 @@ class AdminLoginController extends Controller
                 'email'    => $request->email,
                 'password' =>  Hash::make($request->password),
             ]);
-
             $success['name']  = $user->name;
             $success['token'] = $user->createToken('accessToken', ['admin'])->accessToken;
             return response()->json(['status' => 'success', 'code' => '200', 'data' => $success]);

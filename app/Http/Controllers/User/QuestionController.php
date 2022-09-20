@@ -25,7 +25,6 @@ class QuestionController extends Controller
             $blog = new Question;
             $blog->question = $request->question;
             $blog->description = $request->description;
-          
             $blog->save();
             return response()->json(['status' => 'Success', 'code' => 200, 'data' => $blog]);
         } catch (Exception $e){
@@ -38,7 +37,6 @@ class QuestionController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'id'     => 'required',
-             
             ]);
             if ($validator->fails()) {
                 return response()->json(['code' => '302', 'error' => $validator->errors()]);
@@ -53,7 +51,6 @@ class QuestionController extends Controller
             if ($request->description) {
                 $data->description = $request->description;
             }
-          
             $data->save();
             return response()->json(['status' => 'Success', 'code' => 200, 'data' => $data]);
         } catch (Exception $e) {
