@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('company_name');
             $table->string('company_type');
             $table->Integer('request_status')->default('0')->comment('0 for pending,1 for approved,2 for rejected');
+            $table->string('company_logo')->nullable();
             $table->timestamps();
         });
     }
