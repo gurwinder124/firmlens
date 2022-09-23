@@ -106,7 +106,7 @@ class AdminController extends Controller
         try {
             $data = Company::where('id', $id)->get();
 
-            if($data){
+            if(!$data){
                 return response()->json(['status' => 'error', 'code' => 404, 'message' => "Data Not Found"]);
             }
            
