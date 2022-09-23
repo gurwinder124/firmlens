@@ -69,6 +69,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('user-stats', [CompanyController::class, 'userStats']);
         Route::post('company-update', [CompanyController::class, 'companyUpdate']);
+        Route::post('user-detail', [UserController::class, 'userDetail']);
     });
 });
 //ADMIN ROUTE
