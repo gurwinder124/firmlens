@@ -101,6 +101,20 @@ class AdminController extends Controller
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
     }
+    public function companyDetails($id)
+    {
+        try {
+            $data = Company::where('id', $id)->get();
+
+            if($data){
+                return response()->json(['status' => 'error', 'code' => 404, 'message' => "Data Not Found"]);
+            }
+           
+            return response()->json(['status' => 'Success', 'code' => 200, 'data' => $data]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
+        }
+    }
     function getCompStatus()
     {
         return response()->json(['status' => 200, 'data' => Company::getCompStatus()]);

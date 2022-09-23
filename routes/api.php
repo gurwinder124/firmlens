@@ -66,6 +66,8 @@ Route::prefix('v1')->group(function () {
         //chating route
         Route::post('chating', [ChatController::class, 'Chating']);
         Route::get('show-chating', [ChatController::class, 'showChating']);
+
+        Route::get('user-stats', [CompanyController::class, 'userStats']);
     });
 });
 //ADMIN ROUTE
@@ -88,6 +90,7 @@ Route::prefix('admin')->group(function (){
         Route::post('update-company-status', [AdminController::class, 'updateCompanyStatus']);
         Route::get('comapny-count-list', [AdminController::class, 'comapnyCountList']);
         Route::post('company-list', [AdminController::class, 'companyList']);
+        Route::get('company/{id}', [AdminController::class, 'companyDetails']);
         Route::get('designation-list', [AdminLoginController::class, 'designationList']);
         Route::get('get-comp-status', [AdminController::class, 'getCompStatus']);
         Route::post('designation-add', [AdminLoginController::class, 'designationAdd']);

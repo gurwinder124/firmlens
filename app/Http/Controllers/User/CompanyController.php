@@ -42,4 +42,26 @@ class CompanyController extends Controller
 
         }
     }
+
+    public function userStats(){
+        try{
+            $loginuser = auth('api')->user();
+            // dd( $loginuser);
+            $data['emp_count']= User::where('parent_id','=',$loginuser->id)
+                            ->where('company_id','=',$loginuser->company_id)
+                            ->count();
+            $data['emp_review']= User::join('reviews','reviews.user_id','=','users.id')
+                                ->where('users.parent_id','=',$loginuser->id)
+                                ->where('users.company_id','=',$loginuser->company_id)
+                                ->count();
+            if(!$data){
+                return response()->json(['status'=>'error','code'=>'404','message'=>'Data not found']);
+            }
+            return response()->json(['status'=>'success','code'=>'200','data'=>$data]);
+        }
+        catch(Exception $e){
+            return response()->json(['status'=>'error','code'=>'500','message'=>$e->getmessage()]);
+
+        }
+    }
 }
