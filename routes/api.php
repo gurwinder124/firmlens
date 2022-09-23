@@ -68,6 +68,7 @@ Route::prefix('v1')->group(function () {
         Route::get('show-chating', [ChatController::class, 'showChating']);
 
         Route::get('user-stats', [CompanyController::class, 'userStats']);
+        Route::post('company-update', [CompanyController::class, 'companyUpdate']);
     });
 });
 //ADMIN ROUTE
