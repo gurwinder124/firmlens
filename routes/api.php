@@ -54,6 +54,7 @@ Route::prefix('v1')->group(function () {
         Route::post('delete-question', [QuestionController::class, 'deleteQuestion']);
         Route::get('question-list', [QuestionController::class, 'questionList']);
         //edit sub user
+        Route::get('sub-user/{id}', [UserController::class, 'editSubUser']);
         Route::post('update-sub-user', [UserController::class, 'updateSubUser']);
         //delete sub user
         Route::post('delete-sub-user', [UserController::class, 'deleteSubUser']);
@@ -68,8 +69,9 @@ Route::prefix('v1')->group(function () {
         Route::get('show-chating', [ChatController::class, 'showChating']);
 
         Route::get('user-stats', [CompanyController::class, 'userStats']);
-        Route::post('company-update', [CompanyController::class, 'companyUpdate']);
-        Route::post('user-detail', [UserController::class, 'userDetail']);
+        Route::get('edit-company', [CompanyController::class, 'companyEdit']);
+        Route::post('update-company', [CompanyController::class, 'companyUpdate']);
+        // Route::post('user-detail', [UserController::class, 'userDetail']);
     });
 });
 //ADMIN ROUTE

@@ -63,6 +63,22 @@ class CompanyController extends Controller
         }
     }
 
+    public function companyEdit()
+    {
+        try {
+            $loginuser = auth('api')->user();
+
+            $company = Company::select('*')->where('id', '=', $loginuser->company_id)->first();
+            // dd($company);
+            if (!$company) {
+                return response()->json(['status' => 'error', 'code' => '404', 'message' => 'users not found']);
+            }
+            return response()->json(['status' => 'success', 'code' => '200', 'data' => $company]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'code' => '500', 'message' => $e->getmessage()]);
+        }
+    }
+
     public function companyUpdate(Request $request)
     {
         try {

@@ -12,8 +12,23 @@ use Hash;
 
 class UserController extends Controller
 {
+
+    public function editSubUser($id)
+    {
+        try {
+            $loginuser = auth('api')->user();
+            $user = User::where('id', $id)->where('parent_id', $loginuser->id)->first();
+            if (!$user) {
+                return response()->json(['status' => 'error', 'code' => '404', 'message' => 'Data not found']);
+            }
+            return response()->json(['status' => 'Success', 'code' => 200, 'user' => $user]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
+        }
+    }
+
     public function updateSubUser(Request $request)
-    { // dd('test');
+    {
         $validator = Validator::make($request->all(), [
             'id' => 'required',
             'email'    => 'email',
@@ -65,20 +80,21 @@ class UserController extends Controller
             return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
         }
     }
-     public function userDetail(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['code' => '302', 'error' => $validator->errors()]);
-        }
-        try {
-            $data=User::findorfail($request->id);
+    
+    // public function userDetail(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'id' => 'required',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return response()->json(['code' => '302', 'error' => $validator->errors()]);
+    //     }
+    //     try {
+    //         $data=User::findorfail($request->id);
                
-            return response()->json(['status' => 'Success', 'code' => 200, 'data' =>$data]);
-        } catch (Exception $e) {
-            return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
-        }
-    }
+    //         return response()->json(['status' => 'Success', 'code' => 200, 'data' =>$data]);
+    //     } catch (Exception $e) {
+    //         return response()->json(['status' => 'error', 'code' => '500', 'meassage' => $e->getmessage()]);
+    //     }
+    // }
 }
